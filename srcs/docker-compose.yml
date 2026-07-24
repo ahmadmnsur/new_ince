@@ -1,0 +1,62 @@
+services:
+  mariadb:
+    build: ./requirements/mariadb
+    container_name: mariadb
+    restart: always
+    env_file: .env
+    volumes:
+      - mariadb_data:/var/lib/mysql
+      - ../secrets:/run/secrets:ro
+    networks:
+      - inception_network
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  wordpress:
+    build: ./requirements/wordpress
+    container_name: wordpress
+    restart: always
+    env_file: .env
+    volumes:
+      - wordpress_data:/var/www/html
+      - ../secrets:/run/secrets:ro
+    networks:
+      - inception_network
+    depends_on:
+      mariadb:
+        condition: service_healthy
+
+  nginx:
+    build: ./requirements/nginx
+    container_name: nginx
+    restart: always
+    ports:
+      - "443:443"
+    volumes:
+      - wordpress_data:/var/www/html:ro
+    networks:
+      - inception_network
+    depends_on:
+      - wordpress
+
+volumes:
+  mariadb_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${VOLUMES_PATH}/mariadb
+  
+  wordpress_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${VOLUMES_PATH}/wordpress
+
+networks:
+  inception_network:
+    driver: bridge

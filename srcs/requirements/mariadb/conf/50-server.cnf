@@ -1,0 +1,35 @@
+[server]
+
+[mysqld]
+user                 = mysql
+pid-file             = /var/run/mysqld/mysqld.pid
+basedir              = /usr
+datadir              = /var/lib/mysql
+tmpdir               = /tmp
+lc-messages-dir      = /usr/share/mysql
+lc-messages          = en_US
+
+bind-address         = 0.0.0.0
+port                 = 3306
+
+log_error            = /var/lib/mysql/error.log
+
+expire_logs_days     = 10
+max_binlog_size      = 100M
+
+skip-external-locking
+key_buffer_size      = 128M
+max_allowed_packet   = 1G
+thread_stack         = 192K
+thread_cache_size    = 8
+myisam_recover_options = BACKUP
+query_cache_type     = 0
+query_cache_limit    = 1M
+query_cache_size     = 16M
+
+general_log_file     = /var/lib/mysql/mysql.log
+general_log          = 0
+
+slow_query_log       = 1
+slow_query_log_file  = /var/lib/mysql/mysql-slow.log
+long_query_time      = 10
