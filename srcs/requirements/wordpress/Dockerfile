@@ -1,6 +1,11 @@
 FROM debian:bookworm
 
-RUN apt-get update && apt-get install -y \
+RUN sed -i 's|deb.debian.org|ftp.de.debian.org|g' /etc/apt/sources.list.d/debian.sources
+
+RUN apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
     php8.2-fpm \
     php8.2-mysql \
     php8.2-curl \
@@ -9,10 +14,11 @@ RUN apt-get update && apt-get install -y \
     php8.2-mbstring \
     php8.2-soap \
     php8.2-xml \
-    php8.2-xmlrpc \
-    php8.2-zip gosu \
+    php8.2-zip \
+    gosu \
     curl \
     mariadb-client \
+    ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
 RUN curl -L -o wp-cli.phar https://github.com/wp-cli/wp-cli/releases/download/v2.8.0/wp-cli-2.8.0.phar && \
